@@ -36,25 +36,26 @@ async def add_forecasting(forecasting_data: dict) -> dict:
     new_forecasting = await forecasting_collection.find_one({"_id": forecasting.inserted_id})
     return forecasting_helper(new_forecasting)
 
-async def retrieve_forecasting(id: str) -> dict:
-    forecasting = await forecasting_collection.find_one({"area": id})
-    if forecasting:
-        return forecasting_helper(forecasting)
+async def retrieve_forecasting(area: str) -> dict:
+    forecastings = []
+    async for sensor in sensor_collection.find({"area": area}):
+        forecastings.append(sensor_helper(sensor))
+    return forecastings
 
-async def update_forecasting(id: str, data: dict):
+async def update_forecasting(_id: str, data: dict):
     if len(data) < 1:
         return False
-    forecasting = await forecasting_collection.find_one({"area": id})
+    forecasting = await forecasting_collection.find_one({"_id": _id})
     if forecasting:
         updated_forecasting = await forecasting_collection.update_one(
-            {"area": id}, {"$set": data}
+            {"_id": _id}, {"$set": data}
         )
         if updated_forecasting:
             return True
         return False
 
-async def delete_forecasting(id: str):
-    forecasting = await forecasting_collection.find_one({"area": id})
+async def delete_forecasting(_id: str):
+    forecasting = await forecasting_collection.find_one({"_id": _id})
     if forecasting:
-        await forecasting_collection.delete_one({"area": id})
+        await forecasting_collection.delete_one({"_id": _id})
         return True

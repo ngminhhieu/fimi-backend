@@ -32,31 +32,30 @@ async def retrieve_sensors():
     return sensors
 
 async def add_sensor(sensor_data: dict) -> dict:
-    if len(data) < 1:
-        return False
     sensor = await sensor_collection.insert_one(sensor_data)
     new_sensor = await sensor_collection.find_one({"_id": sensor.inserted_id})
     return sensor_helper(new_sensor)
 
-async def retrieve_sensor(id: str) -> dict:
-    sensor = await sensor_collection.find_one({"device_id": id})
-    if sensor:
-        return sensor_helper(sensor)
+async def retrieve_sensor(device_id: str) -> dict:
+    sensors = []
+    async for sensor in sensor_collection.find({"device_id": device_id}):
+        sensors.append(sensor_helper(sensor))
+    return sensors
 
-async def update_sensor(id: str, data: dict):
+async def update_sensor(_id: str, data: dict):
     if len(data) < 1:
         return False
-    sensor = await sensor_collection.find_one({"device_id": id})
+    sensor = await sensor_collection.find_one({"_id": _id})
     if sensor:
         updated_sensor = await sensor_collection.update_one(
-            {"device_id": id}, {"$set": data}
+            {"_id": _id}, {"$set": data}
         )
         if updated_sensor:
             return True
         return False
 
-async def delete_sensor(id: str):
-    sensor = await sensor_collection.find_one({"device_id": id})
+async def delete_sensor(_id: str):
+    sensor = await sensor_collection.find_one({"_id": id})
     if sensor:
-        await sensor_collection.delete_one({"device_id": id})
+        await sensor_collection.delete_one({"_id": id})
         return True

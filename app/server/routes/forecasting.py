@@ -38,14 +38,14 @@ async def add_forecasting_data(forecasting: ForecastingSchema = Body(...)):
     new_forecasting = await add_forecasting(forecasting)
     return ResponseModel(new_forecasting, "forecasting added successfully.")
 
-@router.post("/update_forecasting_by_area", response_description="update forecasting")
+@router.post("/update_forecasting_by_id", response_description="update forecasting")
 async def get_forecasting_data(forecasting: ForecastingSchema = Body(...)):
     forecasting = jsonable_encoder(forecasting)
-    updated_forecasting = await update_forecasting(forecasting["area"], forecasting)
+    updated_forecasting = await update_forecasting(forecasting["_id"], forecasting)
     if forecasting:
         return ResponseModel(updated_forecasting, "forecasting updated successfully.")
     return ErrorResponseModel(
-        "An error occurred", 404, "forecasting with area {0} doesn't exist".format(forecasting["area"])
+        "An error occurred", 404, "forecasting with _id {0} doesn't exist".format(forecasting["_id"])
     )
 
 @router.delete("/delete_forecasting_by_area/{area}", response_description="forecasting data deleted from the database")
