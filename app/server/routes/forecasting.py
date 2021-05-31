@@ -16,7 +16,7 @@ from server.models.forecasting import ForecastingSchema
 
 router = APIRouter()
 
-@router.get("/", response_description="forecastings retrieved")
+@router.get("/get_forecastings", response_description="forecastings retrieved")
 async def get_forecastings():
     forecastings = await retrieve_forecastings()
     if forecastings:
@@ -24,7 +24,7 @@ async def get_forecastings():
     return ResponseModel(forecastings, "Empty list returned")
 
 
-@router.get("/{area}", response_description="forecasting data retrieved")
+@router.get("/get_forecasting_by_are/{area}", response_description="forecasting data retrieved")
 async def get_forecasting_data(area):
     forecasting = await retrieve_forecasting(area)
     if forecasting:
@@ -32,14 +32,23 @@ async def get_forecasting_data(area):
     return ErrorResponseModel("An error occurred.", 404, "forecasting doesn't exist.")
 
 
-@router.post("/", response_description="forecasting data added into the database")
+@router.post("/add_forecasting", response_description="forecasting data added into the database")
 async def add_forecasting_data(forecasting: ForecastingSchema = Body(...)):
     forecasting = jsonable_encoder(forecasting)
     new_forecasting = await add_forecasting(forecasting)
     return ResponseModel(new_forecasting, "forecasting added successfully.")
 
+@router.post("/update_forecasting_by_area", response_description="update forecasting")
+async def get_forecasting_data(forecasting: ForecastingSchema = Body(...)):
+    forecasting = jsonable_encoder(forecasting)
+    updated_forecasting = await update_forecasting(forecasting["area"], forecasting)
+    if forecasting:
+        return ResponseModel(updated_forecasting, "forecasting updated successfully.")
+    return ErrorResponseModel(
+        "An error occurred", 404, "forecasting with area {0} doesn't exist".format(forecasting["area"])
+    )
 
-@router.delete("/{area}", response_description="forecasting data deleted from the database")
+@router.delete("/delete_forecasting_by_area/{area}", response_description="forecasting data deleted from the database")
 async def delete_forecasting_data(area: str):
     deleted_forecasting = await delete_forecasting(area)
     if deleted_forecasting:

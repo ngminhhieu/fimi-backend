@@ -32,6 +32,8 @@ async def retrieve_sensors():
     return sensors
 
 async def add_sensor(sensor_data: dict) -> dict:
+    if len(data) < 1:
+        return False
     sensor = await sensor_collection.insert_one(sensor_data)
     new_sensor = await sensor_collection.find_one({"_id": sensor.inserted_id})
     return sensor_helper(new_sensor)
