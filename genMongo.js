@@ -36,6 +36,7 @@ db.location_aqi.insert(
         },
         {
             area: 'Saigon',
+            updated: Date(),
             latitude: _rand() * 100,
             longitude: _rand() * 100,
             PM2_5: _rand() * 100,

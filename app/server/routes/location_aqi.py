@@ -8,6 +8,7 @@ from server.dms.location_aqi import (
     retrieve_location_aqi,
     retrieve_location_aqis,
     update_location_aqi,
+    retrieve_heatmaps
 )
 from server.utils.response import (
     ErrorResponseModel,
@@ -24,6 +25,14 @@ async def get_loc_aqis():
     if aqis:
         return ResponseModel(aqis, "locations aqis data retrieved successfully")
     return ResponseModel(aqis, "Empty list returned")
+
+
+@router.get("/get_heatmaps", response_description="heatmaps retrieved")
+async def get_heatmaps():
+    heatmaps = await retrieve_heatmaps()
+    if heatmaps:
+        return ResponseModel(heatmaps, "heatmaps data retrieved successfully")
+    return ResponseModel(heatmaps, "Empty list returned")
 
 
 @router.get("/get_aqi_by_area/{area}", response_description="location aqi data retrieved")

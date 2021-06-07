@@ -26,14 +26,34 @@ def location_aqi_helper(aqi) -> dict:
     }
 
 
+def heatmap_helper(aqi) -> dict:
+    return {
+        "latitude": aqi["latitude"],
+        "longitude": aqi["longitude"],
+        "updated": aqi["updated"],
+        "PM2_5": aqi["PM2_5"]
+    }
+
+
 async def retrieve_location_aqis():
     aqis = []
     async for aqi in locationaqi_collection.find().limit(20):
+        print(aqi['updated'])
         aqis.append(location_aqi_helper(aqi))
     return aqis
 
 
+async def retrieve_heatmaps():
+    heatmaps = []
+    async for heatmap in locationaqi_collection.find().limit(20):
+        heatmaps.append(heatmap_helper(heatmap))
+
+    return heatmaps
+
+
 async def add_location_aqi(aqi_data: dict) -> dict:
+    history = retrieve_location_aqi(aqi_data['area'], aqi_data['latitude'], aqi_data['longitude'])
+    aqi_data['history'] = [his['PM2.5'] for his in history]
     aqi = await locationaqi_collection.insert_one(aqi_data)
     new_aqi = await locationaqi_collection.find_one({"_id": aqi.inserted_id})
     return location_aqi_helper(new_aqi)
@@ -47,7 +67,7 @@ async def retrieve_location_aqi(area: str, lat: float = None, long: float = None
     else:
         async for aqi in locationaqi_collection.find({"area": area}):
             aqis.append(location_aqi_helper(aqi))
-    return aqis
+    return aqis[len(aqis) - 1]  # return the latest record
 
 
 async def update_location_aqi(_id: str, data: dict):
