@@ -7,6 +7,8 @@ from server.database.mongo import database
 forecasting_collection = database.get_collection("forecasting")
 
 # helpers
+
+
 def forecasting_helper(forecasting) -> dict:
     return {
         "id": str(forecasting["_id"]),
@@ -31,16 +33,19 @@ async def retrieve_forecastings():
         forecastings.append(forecasting_helper(forecasting))
     return forecastings
 
+
 async def add_forecasting(forecasting_data: dict) -> dict:
     forecasting = await forecasting_collection.insert_one(forecasting_data)
     new_forecasting = await forecasting_collection.find_one({"_id": forecasting.inserted_id})
     return forecasting_helper(new_forecasting)
 
+
 async def retrieve_forecasting(area: str) -> dict:
     forecastings = []
-    async for sensor in sensor_collection.find({"area": area}):
-        forecastings.append(sensor_helper(sensor))
+    async for forecasting in forecasting_collection.find({"area": area}):
+        forecastings.append(forecasting_helper(forecasting))
     return forecastings
+
 
 async def update_forecasting(_id: str, data: dict):
     if len(data) < 1:
@@ -53,6 +58,7 @@ async def update_forecasting(_id: str, data: dict):
         if updated_forecasting:
             return True
         return False
+
 
 async def delete_forecasting(_id: str):
     forecasting = await forecasting_collection.find_one({"_id": _id})

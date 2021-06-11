@@ -1,9 +1,11 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
+
 class RawCalibration(BaseModel):
     raw: float
     calibrated: float
+
 
 class ForecastingSchema(BaseModel):
     area: str = None

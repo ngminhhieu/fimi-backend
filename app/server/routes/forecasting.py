@@ -16,6 +16,7 @@ from server.models.forecasting import ForecastingSchema
 
 router = APIRouter()
 
+
 @router.get("/get_forecastings", response_description="forecastings retrieved")
 async def get_forecastings():
     forecastings = await retrieve_forecastings()
@@ -24,7 +25,7 @@ async def get_forecastings():
     return ResponseModel(forecastings, "Empty list returned")
 
 
-@router.get("/get_forecasting_by_are/{area}", response_description="forecasting data retrieved")
+@router.get("/get_forecasting_by_area/{area}", response_description="forecasting data retrieved")
 async def get_forecasting_data(area):
     forecasting = await retrieve_forecasting(area)
     if forecasting:
@@ -38,6 +39,7 @@ async def add_forecasting_data(forecasting: ForecastingSchema = Body(...)):
     new_forecasting = await add_forecasting(forecasting)
     return ResponseModel(new_forecasting, "forecasting added successfully.")
 
+
 @router.post("/update_forecasting_by_id", response_description="update forecasting")
 async def get_forecasting_data(forecasting: ForecastingSchema = Body(...)):
     forecasting = jsonable_encoder(forecasting)
@@ -47,6 +49,7 @@ async def get_forecasting_data(forecasting: ForecastingSchema = Body(...)):
     return ErrorResponseModel(
         "An error occurred", 404, "forecasting with _id {0} doesn't exist".format(forecasting["_id"])
     )
+
 
 @router.delete("/delete_forecasting_by_area/{area}", response_description="forecasting data deleted from the database")
 async def delete_forecasting_data(area: str):
