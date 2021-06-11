@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
+import datetime
 
 
 class RawCalibration(BaseModel):
@@ -9,7 +10,9 @@ class RawCalibration(BaseModel):
 
 class ForecastingSchema(BaseModel):
     area: str = None
-    datetime: str = None
+    updated: datetime.datetime = None
+    latitude: Optional[RawCalibration] = None
+    longitude: Optional[RawCalibration] = None
     PM2_5: Optional[RawCalibration] = None
     PM10: Optional[RawCalibration] = None
     PM1_0: Optional[RawCalibration] = None

@@ -12,8 +12,11 @@ forecasting_collection = database.get_collection("forecasting")
 def forecasting_helper(forecasting) -> dict:
     return {
         "id": str(forecasting["_id"]),
+        "device_id": forecasting["device_id"],
         "area": forecasting["area"],
-        "datetime": forecasting["datetime"],
+        "latitude": forecasting["latitude"],
+        "longitude": forecasting["longitude"],
+        "updated": forecasting["updated"],
         "PM2_5": forecasting["PM2_5"],
         "PM10": forecasting["PM10"],
         "PM1_0": forecasting["PM1_0"],
@@ -29,8 +32,10 @@ def forecasting_helper(forecasting) -> dict:
 
 async def retrieve_forecastings():
     forecastings = []
-    async for forecasting in forecasting_collection.find().limit(20):
-        forecastings.append(forecasting_helper(forecasting))
+    async for forecasting in forecasting_collection.aggregate([
+        {'$sort': {'updated': -1}},
+            {'$group': {'_id': {'device_id': '$device_id'}, "doc": {"$first": "$$ROOT"}}}]):
+        forecastings.append(forecasting_helper(forecasting['doc']))
     return forecastings
 
 
@@ -42,8 +47,11 @@ async def add_forecasting(forecasting_data: dict) -> dict:
 
 async def retrieve_forecasting(area: str) -> dict:
     forecastings = []
-    async for forecasting in forecasting_collection.find({"area": area}):
-        forecastings.append(forecasting_helper(forecasting))
+    async for forecasting in forecasting_collection.aggregate([
+        {'$match': {"area": area}},
+        {'$sort': {'updated': -1}},
+            {'$group': {'_id': {'device_id': '$device_id'}, "doc": {"$first": "$$ROOT"}}}]):
+        forecastings.append(forecasting_helper(forecasting['doc']))
     return forecastings
 
 
