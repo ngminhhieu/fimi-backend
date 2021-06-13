@@ -4,6 +4,7 @@ from server.routes.sensor import router as SensorRouter
 from server.routes.forecasting import router as ForecastingRouter
 from server.routes.location_aqi import router as LocationAQIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from server.routes.question import router as QuestionRouter
 
 app = FastAPI()
 
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(SensorRouter, tags=["Sensor"], prefix="/sensor")
 app.include_router(ForecastingRouter, tags=["Forecasting"], prefix="/forecasting")
 app.include_router(LocationAQIRouter, tags=["Location AQI"], prefix="/aqi")
+app.include_router(QuestionRouter, tags=["Question"], prefix="/question")
 
 
 @app.get("/", tags=["Root"])
