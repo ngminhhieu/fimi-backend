@@ -1,1 +1,1 @@
-Create a file named ".env" and add "MONGO=mongodb://localhost:27017" to this file
+python app/main.py
